@@ -10,6 +10,10 @@
 %randomly choosing a few OD pairs, and then remove 25 % of the demand from
 %each of the OD pair.
 
+%In the end this script just saves the third column of the OD pair table.
+%It assumes that the order of OD pairs is maintained in the rest of the
+%script.
+
 %Parameters to set: 
 
 FRACTION_TO_REDUCE    = 0.25;
