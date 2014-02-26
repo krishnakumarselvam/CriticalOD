@@ -17,14 +17,14 @@ delete('TrialPoints/*')
 
 %Initialize parameters of SO algorithm
 HOMEDIRECTORY = pwd;
-MAXITER = 100;
+MAXITER = 10;
 
 %Reading input data
 baseODMatrix = textread('Inputs/ODpairs.txt');%Read from the Original OD pair data
 AllowedReductionPercentage = 0.25;
 numNewStations=20;
 
-Evaluated_Points = zeros(MAXITER,numNewStations);
+Evaluated_Points = zeros(MAXITER,size(baseODMatrix,1));
 Fsimvalues = zeros(MAXITER,1);
 
 %%
@@ -34,9 +34,9 @@ for iter = 1:MAXITER
 
     %Find a trial point
     %-----------------------------------------
-    [ChangedODMatrix,rowIDs,currTextFilename]=FindTrialPoint(iter,baseODMatrix,AllowedReductionPercentage,numNewStations,HOMEDIRECTORY);
+    [TrialPoint]=FindTrialPoint(iter,baseODMatrix,HOMEDIRECTORY);
     %-----------------------------------------
-    Evaluated_Points(iter,:)=rowIDs';
+    Evaluated_Points(iter,:)=TrialPoint;
 
     %%
 

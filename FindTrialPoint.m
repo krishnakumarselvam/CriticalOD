@@ -6,17 +6,19 @@
 %number of carrs from the network, and we need to pick how many from each
 %of the OD pairs.
 
-function [ChangedODMatrixList,rowIDs,currTextFilename] = FindTrialPoint(iter,baseODMatrix,AllowedReductionPercentage,numNewStations,HOMEDIRECTORY)
+function [TrialPoint] = FindTrialPoint(iter,baseODMatrix,HOMEDIRECTORY)
 
-if(iter == 1)
+if(iter <= 100)
     %We need to select a random trial point;
-    ChangedODMatrixList = PickRandomTrialPoint
+    TrialPoint = PickRandomTrialPoint;
     
 else
     %We have to optimize the current metamodel to get the new trial point.
-
-
 end
+ChangedODMatrix = baseODMatrix;
+ChangedODMatrix(:,3) = TrialPoint';
+currTextFilename = [HOMEDIRECTORY '\\TrialPoints\\Iter_' num2str(iter) '.txt'];
+dlmwrite(currTextFilename,ChangedODMatrix,'\t');
 
 end
 
