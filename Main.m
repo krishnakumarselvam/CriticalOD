@@ -40,8 +40,11 @@ for iter = 1:MAXITER
 
     %%
 
-    %Evaluate trial point and update metamodel
+    %Evaluate trial point
     Fsimvalues(iter,1) = GetFsim(iter,HOMEDIRECTORY);
+    
+    %Update metamodel
+    Betas = UpdateMetamodel(Fsimvalues,Evaluated_Points);
 
 
     %%
