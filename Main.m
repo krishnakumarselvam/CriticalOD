@@ -17,15 +17,18 @@ delete('TrialPoints/*')
 
 %Initialize parameters of SO algorithm
 HOMEDIRECTORY = pwd;
-MAXITER = 10;
+MAXITER = 50;
 
 %Reading input data
 baseODMatrix = textread('Inputs/ODpairs.txt');%Read from the Original OD pair data
 AllowedReductionPercentage = 0.25;
-numNewStations=20;
+NUM_VEHICLES_TO_REMOVE  = 40; % If this value is changed, the corresponding value in GenerateRandomTrialPoints also needs to be changed
 
 Evaluated_Points = zeros(MAXITER,size(baseODMatrix,1));
 Fsimvalues = zeros(MAXITER,1);
+
+%%
+CurrBeta  = zeros(1,size(baseODMatrix,1));
 
 %%
 for iter = 1:MAXITER
@@ -34,7 +37,7 @@ for iter = 1:MAXITER
 
     %Find a trial point
     %-----------------------------------------
-    [TrialPoint]=FindTrialPoint(iter,baseODMatrix,HOMEDIRECTORY);
+    [TrialPoint]=FindTrialPoint(iter,baseODMatrix,HOMEDIRECTORY,CurrBeta,Evaluated_Points,NUM_VEHICLES_TO_REMOVE);
     %-----------------------------------------
     Evaluated_Points(iter,:)=TrialPoint;
 
@@ -44,7 +47,8 @@ for iter = 1:MAXITER
     Fsimvalues(iter,1) = GetFsim(iter,HOMEDIRECTORY);
     
     %Update metamodel
-    Betas = UpdateMetamodel(Fsimvalues,Evaluated_Points);
+    CurrBeta = UpdateMetamodel(Fsimvalues,Evaluated_Points);
+    CurrBeta = CurrBeta';
 
 
     %%

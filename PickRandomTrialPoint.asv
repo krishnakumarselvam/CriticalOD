@@ -1,6 +1,0 @@
-function [ODMatrixList] = PickRandomTrialPoint();
-
-load ('Inputs/RandomTrialPoints', 'randomTrialPoints');
-n = randi(size(randomTrialPoints,2));
-ODMatrixList = randomTrialPoints(
-end
