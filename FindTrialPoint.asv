@@ -15,8 +15,7 @@ if(iter == 1)
 else
     %We have to optimize the current metamodel to get the new trial point.
     %Starting off with a quadratic metamodel, in which the objective
-    %function is a quadratic function of the list of non zero OD Matrix
-    %demands
+    %function is a quadratic 
 end
 ChangedODMatrix = baseODMatrix;
 ChangedODMatrix(:,3) = TrialPoint';
