@@ -34,11 +34,10 @@ Evaluated_Points = zeros(MAXITER,PROBLEMDIMENSION);
 Fsimvalues = zeros(MAXITER,1);
 AcceptedInSO =  zeros(MAXITER,1);
 LastAcceptedPoint=1;
-IsMixturePoint = zeros(MAXITER,1);
 
 
 %%
-CurrBeta  = zeros(1,PROBLEMDIMENSION);
+CurrBeta  = zeros(1,size(baseODMatrix,1));
 
 %%
 for iter = 1:MAXITER
@@ -79,13 +78,9 @@ for iter = 1:MAXITER
     DoWeNeedMixturePoint = EvaluateChangeinBeta(OldBeta,CurrBeta,BETATOL);
     if(DoWeNeedMixturePoint)
         iter = iter+1;
-        [TrialPoint] = FindMixturePoint(iter,baseODMatrix,HOMEDIRECTORY,TopODIndices);
+        [TrialPoint] = FindMixturePoint();
         Evaluated_Points(iter,:)=TrialPoint;
         Fsimvalues(iter,1) = GetFsim(iter,HOMEDIRECTORY);
-        OldBeta = CurrBeta;
-        CurrBeta = UpdateMetamodel(Fsimvalues,Evaluated_Points,LastAcceptedPoint,iter);
-        CurrBeta = CurrBeta';
-        IsMixturePoint(iter) = 1;
     end
     
 

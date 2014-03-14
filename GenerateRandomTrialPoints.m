@@ -16,33 +16,44 @@
 
 %Parameters to set: 
 
+%From now on, only the Demand values belonging to the TopODIndices OD pairs
+%will be stored in the variables throughout the algorithm. However, the
+%text file that is written for Aimsun Model creation willcontinue to have
+%all the OD pair values.
+clc
+clear
 FRACTION_TO_REDUCE    = 0.25;
-NUM_VEHICLES_TO_REMOVE  = 40;
+NUM_VEHICLES_TO_REMOVE  = 40; %Change this in the main file as well
 NUM_PTS_TO_GENERATE     = 100; % We generate and store these many random trial points 
 
 baseODMatrix = textread('Inputs/ODpairs.txt');%Read from the Original OD pair data
 N = size(baseODMatrix,1); %Number of OD pairs in the network
+PROBLEMDIMENSION = 10;
+randomTrialPoints = zeros (NUM_PTS_TO_GENERATE, PROBLEMDIMENSION); % This is where we store our results
 
-randomTrialPoints = zeros (NUM_PTS_TO_GENERATE, N); % This is where we store our results
+
+[temp,ind] = sort(baseODMatrix(:,3),'descend');
+TopODIndices = ind(1:PROBLEMDIMENSION); % This now contains the index of the OD pairs with the 200 (i.e. numODsConsidered) highest demands.
 
 for i = 1:NUM_PTS_TO_GENERATE
     disp(['Iteration ' num2str(i)]);
-    rowIDs = randperm(N);
+    rowIDs = randperm(PROBLEMDIMENSION);
     ChangedODMatrixList = baseODMatrix(:,3)';
     vehiclesRemoved = 0;
     
     j=1;
-    while (vehiclesRemoved <=NUM_VEHICLES_TO_REMOVE)
-        vehiclesRemoved = vehiclesRemoved + ChangedODMatrixList(rowIDs(j))*(1-FRACTION_TO_REDUCE);
-        if(vehiclesRemoved>=NUM_VEHICLES_TO_REMOVE)
-            currentVehRemoved = NUM_VEHICLES_TO_REMOVE - (vehiclesRemoved - ChangedODMatrixList(rowIDs(j))*(1-FRACTION_TO_REDUCE));
+    while (vehiclesRemoved <NUM_VEHICLES_TO_REMOVE)
+        temp = vehiclesRemoved + ChangedODMatrixList(TopODIndices(rowIDs(j)))*(1-FRACTION_TO_REDUCE);
+        if(temp>=NUM_VEHICLES_TO_REMOVE)
+            currentVehRemoved = NUM_VEHICLES_TO_REMOVE - (vehiclesRemoved);
         else
-            currentVehRemoved = ChangedODMatrixList(rowIDs(j))*(1-FRACTION_TO_REDUCE);
+            currentVehRemoved = ChangedODMatrixList(TopODIndices(rowIDs(j)))*(1-FRACTION_TO_REDUCE);
         end
-        ChangedODMatrixList(rowIDs(j)) = ChangedODMatrixList(rowIDs(j)) - currentVehRemoved;
+        vehiclesRemoved = vehiclesRemoved + currentVehRemoved;
+        ChangedODMatrixList(TopODIndices(rowIDs(j))) = ChangedODMatrixList(TopODIndices(rowIDs(j))) - currentVehRemoved;
         j=j+1;
     end
-    randomTrialPoints(i,1:N) = ChangedODMatrixList;
+    randomTrialPoints(i,1:PROBLEMDIMENSION) = ChangedODMatrixList(TopODIndices);
 end
 
-save ('Inputs/RandomTrialPoints', 'randomTrialPoints');
+save ('Inputs/RandomTrialPoints', 'randomTrialPoints','TopODIndices');
