@@ -6,7 +6,7 @@
 %number of carrs from the network, and we need to pick how many from each
 %of the OD pairs.
 
-function [TrialPoint] = FindTrialPoint(iter,baseODMatrix,HOMEDIRECTORY,Betas,Evaluated_Points,NUM_VEHICLES_TO_REMOVE,TopODIndices)
+function [TrialPoint] = FindTrialPoint(iter,baseODMatrix,HOMEDIRECTORY,Betas,Evaluated_Points,NUM_VEHICLES_TO_REMOVE,TopODIndices,AllowedReductionPercentage)
 
 if(iter == 1)
     %We need to select a random trial point;
@@ -18,7 +18,7 @@ else
     %Starting off with a quadratic metamodel, in which the objective
     %function is a quadratic function of the list of non zero OD Matrix
     %demands
-    [TrialPoint] = OptimizeMetamodel(Betas,baseODMatrix,Evaluated_Points(iter-1,:),NUM_VEHICLES_TO_REMOVE,TopODIndices);
+    [TrialPoint] = OptimizeMetamodel(Betas,baseODMatrix,Evaluated_Points(iter-1,:),NUM_VEHICLES_TO_REMOVE,TopODIndices,AllowedReductionPercentage);
 end
 ChangedODMatrix = baseODMatrix;
 ChangedODMatrix(TopODIndices,3) = TrialPoint';

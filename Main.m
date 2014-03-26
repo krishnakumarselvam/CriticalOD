@@ -17,7 +17,7 @@ delete('TrialPoints/*')
 
 %Initialize constants of SO algorithm
 HOMEDIRECTORY = pwd;
-MAXITER = 10;
+MAXITER = 30;
 
 %Initializing Parameters
 ETA = .001;
@@ -32,6 +32,7 @@ PROBLEMDIMENSION = length(TopODIndices);
 
 Evaluated_Points = zeros(MAXITER,PROBLEMDIMENSION);
 Fsimvalues = zeros(MAXITER,1);
+AcceptedFsimValues = zeros (MAXITER,1);
 AcceptedInSO =  zeros(MAXITER,1);
 LastAcceptedPoint=1;
 IsMixturePoint = zeros(MAXITER,1);
@@ -47,7 +48,7 @@ for iter = 1:MAXITER
 
     %Find a trial point
     %-----------------------------------------
-    [TrialPoint]=FindTrialPoint(iter,baseODMatrix,HOMEDIRECTORY,CurrBeta,Evaluated_Points,NUM_VEHICLES_TO_REMOVE,TopODIndices);
+    [TrialPoint]=FindTrialPoint(iter,baseODMatrix,HOMEDIRECTORY,CurrBeta,Evaluated_Points,NUM_VEHICLES_TO_REMOVE,TopODIndices,AllowedReductionPercentage);
     %-----------------------------------------
     Evaluated_Points(iter,:)=TrialPoint;
     
@@ -77,7 +78,8 @@ for iter = 1:MAXITER
 
     %Mixture points
     DoWeNeedMixturePoint = EvaluateChangeinBeta(OldBeta,CurrBeta,BETATOL);
-    if(DoWeNeedMixturePoint)
+    if(DoWeNeedMixturePoint && iter+1 <= MAXITER)
+        AcceptedFsimValues(iter) = Fsimvalues(LastAcceptedPoint);
         iter = iter+1;
         [TrialPoint] = FindMixturePoint(iter,baseODMatrix,HOMEDIRECTORY,TopODIndices);
         Evaluated_Points(iter,:)=TrialPoint;
@@ -88,12 +90,11 @@ for iter = 1:MAXITER
         IsMixturePoint(iter) = 1;
     end
     
-
+  AcceptedFsimValues(iter) = Fsimvalues(LastAcceptedPoint);
+  PlotAlgorithmProgression(Fsimvalues,AcceptedInSO,iter,AcceptedFsimValues,IsMixturePoint);
+ 
 
 end
+%print -djpeg100 MatlabPlot.jpg
 
-%%
-%Post processing
-plot(Fsimvalues,'-*')
-xlabel('Iterations');
-ylabel('Simulated values');
+
