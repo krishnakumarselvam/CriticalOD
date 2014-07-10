@@ -39,7 +39,6 @@ from angParams import newAngName
 from angParams import baseAngName
 from angParams import ResultFileName
 from angParams import ODFileName
-matrixFilePath = 'C:/Users/Krishna/Dropbox/CriticalOD/Aimsun/ODpairs.txt'
 def main( argv=None):
         
         if argv is None:
@@ -70,7 +69,6 @@ def main( argv=None):
                 crs.closed
                 ctr=0
 
-                file = open( matrixFilePath, 'w' )
                 objectType = GKSystem.getSystem().getActiveModel().getType( "GKODMatrix" )
                 #centroids = console.getModel().getCatalog().getObjectsByType( objectType )
                 for currODMatrix in console.getModel().getCatalog().getObjectsByType( objectType ).itervalues():

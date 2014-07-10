@@ -1,4 +1,4 @@
-function BoolMixturePoint = EvaluateChangeinBeta(OldBeta,CurrBeta,BETATOL)
+function [BoolMixturePoint,relBeta] = EvaluateChangeinBeta(OldBeta,CurrBeta,BETATOL)
 
     relBeta = norm(CurrBeta-OldBeta)/norm(OldBeta);
     if (relBeta < BETATOL)

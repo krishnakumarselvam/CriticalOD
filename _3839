@@ -1,0 +1,26 @@
+<AIMSUN_ANIMATION>
+	<STATIC>
+		<SOURCE>
+			<FILE>C:/Users/Krishna/Dropbox/CriticalOD/AimsunFiles/Aimsun_1.ang</FILE>
+			<SIMULATION>
+				<ENGINE>
+					<NAME>Aimsun Micro</NAME>
+					<VERSION>6.1.412890</VERSION>
+				</ENGINE>
+				<REPLICATION>3839</REPLICATION>
+				<CYCLE>750</CYCLE>
+				<START_TIME>2005-04-12T17:00:00</START_TIME>
+				<END_TIME>2005-04-12T18:00:00</END_TIME>
+				<HOME>C:\Program Files\TSS-Transport Simulation Systems\Aimsun 6.1</HOME>
+				<RESOURCES>C:\Program Files\TSS-Transport Simulation Systems\Aimsun 6.1</RESOURCES>
+			</SIMULATION>
+		</SOURCE>
+		<VEHICLE_TYPES>
+			<VEHICLE_TYPE ID="3244">
+				<NAME>car</NAME>
+			</VEHICLE_TYPE>
+		</VEHICLE_TYPES>
+	</STATIC>
+	<DYNAMIC>
+	</DYNAMIC>
+</AIMSUN_ANIMATION>

@@ -12,16 +12,15 @@ delete('Outputs/*')
 delete('AimsunFiles/*')
 delete('TrialPoints/*')
 
-
 %%
 
 %Initialize constants of SO algorithm
 HOMEDIRECTORY = pwd;
-MAXITER = 30;
+MAXITER = 50;
 
 %Initializing Parameters
 ETA = .001;
-BETATOL = 10^-1; % threshold for relative change in the norm of metamodel parameters (beta)
+BETATOL = 0.01; % threshold for relative change in the norm of metamodel parameters (beta)
 
 %Reading input data
 baseODMatrix = textread('Inputs/ODpairs.txt');%Read from the Original OD pair data
@@ -32,14 +31,16 @@ PROBLEMDIMENSION = length(TopODIndices);
 
 Evaluated_Points = zeros(MAXITER,PROBLEMDIMENSION);
 Fsimvalues = zeros(MAXITER,1);
+Fsimvalues_Secondary = zeros(MAXITER,1);
 AcceptedFsimValues = zeros (MAXITER,1);
 AcceptedInSO =  zeros(MAXITER,1);
 LastAcceptedPoint=1;
 IsMixturePoint = zeros(MAXITER,1);
+RelBetaList = zeros(MAXITER,1);
 
 
 %%
-CurrBeta  = zeros(1,PROBLEMDIMENSION);
+CurrBeta  = zeros(1,PROBLEMDIMENSION*2+1);
 
 %%
 for iter = 1:MAXITER
@@ -56,7 +57,7 @@ for iter = 1:MAXITER
     %%
 
     %Evaluate trial point
-    Fsimvalues(iter,1) = GetFsim(iter,HOMEDIRECTORY);
+    [Fsimvalues(iter,1), Fsimvalues_Secondary(iter,1)] = GetFsim(iter,HOMEDIRECTORY);
   
 
     %%
@@ -73,17 +74,17 @@ for iter = 1:MAXITER
     CurrBeta = UpdateMetamodel(Fsimvalues,Evaluated_Points,LastAcceptedPoint,iter);
     CurrBeta = CurrBeta';
 
-
     %%
 
     %Mixture points
-    DoWeNeedMixturePoint = EvaluateChangeinBeta(OldBeta,CurrBeta,BETATOL);
+
+    [DoWeNeedMixturePoint,RelBetaList(iter,1)] = EvaluateChangeinBeta(OldBeta,CurrBeta,BETATOL);
     if(DoWeNeedMixturePoint && iter+1 <= MAXITER)
         AcceptedFsimValues(iter) = Fsimvalues(LastAcceptedPoint);
         iter = iter+1;
         [TrialPoint] = FindMixturePoint(iter,baseODMatrix,HOMEDIRECTORY,TopODIndices);
         Evaluated_Points(iter,:)=TrialPoint;
-        Fsimvalues(iter,1) = GetFsim(iter,HOMEDIRECTORY);
+        [Fsimvalues(iter,1), Fsimvalues_Secondary(iter,1)] = GetFsim(iter,HOMEDIRECTORY);
         OldBeta = CurrBeta;
         CurrBeta = UpdateMetamodel(Fsimvalues,Evaluated_Points,LastAcceptedPoint,iter);
         CurrBeta = CurrBeta';
@@ -91,10 +92,15 @@ for iter = 1:MAXITER
     end
     
   AcceptedFsimValues(iter) = Fsimvalues(LastAcceptedPoint);
-  PlotAlgorithmProgression(Fsimvalues,AcceptedInSO,iter,AcceptedFsimValues,IsMixturePoint);
+  PlotAlgorithmProgression(Fsimvalues_Secondary,Fsimvalues,AcceptedInSO,iter,AcceptedFsimValues,IsMixturePoint);
  
 
 end
+figure
+scatter(Fsimvalues,Fsimvalues_Secondary);
+lsline
+xlabel('Mean of Link TT - Standard Deviation');
+ylabel('Average vehicle travel time' );
 %print -djpeg100 MatlabPlot.jpg
 
 

@@ -8,7 +8,6 @@
 
 function [CurrTrialPoint] = PickRandomTrialPoint()
 load ('Inputs/RandomTrialPoints', 'randomTrialPoints');
-%n = randi(size(randomTrialPoints,1));
-n=1;
+n = randi(size(randomTrialPoints,1));
 CurrTrialPoint = randomTrialPoints(n,:);
 end

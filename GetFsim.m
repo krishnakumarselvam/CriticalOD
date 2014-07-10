@@ -1,4 +1,4 @@
-function [Fsimvalue] = GetFsim(iter,HOMEDIRECTORY)
+function [Fsimvalue, Fsimvalue_Secondary] = GetFsim(iter,HOMEDIRECTORY)
 
 %This function creates the aimsun file according to the changed OD Matrix
 %as per the current trial point (details of which are in currTextFile). We
@@ -10,19 +10,22 @@ function [Fsimvalue] = GetFsim(iter,HOMEDIRECTORY)
 
 fid=fopen([HOMEDIRECTORY '\\PythonFiles\\angParams.py'],'w');
 
-fprintf(fid,['baseAngName = \''C:\\Users\\Krishna\\Dropbox\\CriticalOD\\Base\\AimsunBase.ang\''\n']);
-fprintf(fid,['newAngName = \''C:\\Users\\Krishna\\Dropbox\\CriticalOD\\AimsunFiles\\Aimsun_' num2str(iter) '.ang\''\n']);
-fprintf(fid,['ResultFileName = \''C:\\Users\\Krishna\\Dropbox\\CriticalOD\\Outputs\\Iter_' num2str(iter) '.txt\''\n']);
-fprintf(fid,['ODFileName = \''C:\\Users\\Krishna\\Dropbox\\CriticalOD\\TrialPoints\\Iter_' num2str(iter) '.txt\''']);
+temp = strrep(HOMEDIRECTORY,'\','\\');
 
-cd 'C:/Program Files/TSS-Transport Simulation Systems/AIMSUN 6.1/'
-!aconsole.exe -script C:/Users/Krishna/Dropbox/CriticalOD/PythonFiles/Create_Model.py 
+fprintf(fid,['baseAngName = \''' temp '\\Base\\AimsunBase.ang\''\n']);
+fprintf(fid,['newAngName = \''' temp '\\AimsunFiles\\Aimsun_' num2str(iter) '.ang\''\n']);
+fprintf(fid,['ResultFileName = \''' temp '\\Outputs\\Iter_' num2str(iter) '.txt\''\n']);
+fprintf(fid,['ODFileName = \''' temp '\\TrialPoints\\Iter_' num2str(iter) '.txt\''']);
+ResultFileName = [temp '\\Outputs\\Iter_' num2str(iter) '.txt'];
 
-ResultFileName = ['C:\\Users\\Krishna\\Dropbox\\CriticalOD\\Outputs\\Iter_' num2str(iter) '.txt'];
+cd BatchFile
+!CreateCommand
+
 while ~exist(ResultFileName)
-!aconsole.exe -script C:/Users/Krishna/Dropbox/CriticalOD/PythonFiles/simRepAll_newMdl_newReplic.py 
+!RunCommand
 end
 cd (HOMEDIRECTORY)
 filecontents = textread(ResultFileName);
 Fsimvalue=filecontents(1,3);
+Fsimvalue_Secondary = filecontents(1,1);
 end
