@@ -20,7 +20,6 @@ ResultFileName = [temp '\\Outputs\\Iter_' num2str(iter) '.txt'];
 
 cd BatchFile
 !CreateCommand
-
 while ~exist(ResultFileName)
 !RunCommand
 end

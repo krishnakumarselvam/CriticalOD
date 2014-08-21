@@ -92,7 +92,7 @@ for iter = 1:MAXITER
     end
     
   AcceptedFsimValues(iter) = Fsimvalues(LastAcceptedPoint);
-  PlotAlgorithmProgression(Fsimvalues_Secondary,Fsimvalues,AcceptedInSO,iter,AcceptedFsimValues,IsMixturePoint);
+  %PlotAlgorithmProgression(Fsimvalues_Secondary,Fsimvalues,AcceptedInSO,iter,AcceptedFsimValues,IsMixturePoint);
  
 
 end

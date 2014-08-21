@@ -18,7 +18,8 @@ else
     %Starting off with a quadratic metamodel, in which the objective
     %function is a quadratic function of the list of non zero OD Matrix
     %demands
-    [TrialPoint] = OptimizeMetamodel(Betas,baseODMatrix,Evaluated_Points(iter-1,:),NUM_VEHICLES_TO_REMOVE,TopODIndices,AllowedReductionPercentage);
+    
+    [TrialPoint] = OptimizeMetamodel_withQueuing(Betas,baseODMatrix,Evaluated_Points(iter-1,:),NUM_VEHICLES_TO_REMOVE,TopODIndices,AllowedReductionPercentage);
 end
 ChangedODMatrix = baseODMatrix;
 ChangedODMatrix(TopODIndices,3) = TrialPoint';
