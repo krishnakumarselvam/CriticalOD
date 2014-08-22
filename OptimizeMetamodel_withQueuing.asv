@@ -9,32 +9,43 @@ function [TrialPoint] = OptimizeMetamodel_withQueuing(Betas,baseODMatrix,x_init,
 %Here I add the queuing model to the metamodel
 keyboard
 RHS = baseODMatrix(:,3);
-PROBLEMDIMENSION = length(TopODIndices);
-
+DEMANDLENGTH = length(TopODIndices);
 % %Objective function
 % --------------------------------------------------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------------------------------------------------
 function [z] = obj(x)
-    z= Betas(1)*x(PROBLEMDIMENSION+1) + Betas(2 : PROBLEMDIMENSION+1)*x(1:PROBLEMDIMENSION) + Betas(PROBLEMDIMENSION + 2 : 2*PROBLEMDIMENSION+1)*x((1:PROBLEMDIMENSION)).^2;
+    z= Betas(1)*x(DEMANDLENGTH+1) + Betas(2 : DEMANDLENGTH+1)*x(1:DEMANDLENGTH) + Betas(DEMANDLENGTH + 2 : 2*DEMANDLENGTH+1)*x((1:DEMANDLENGTH)).^2;
 end
-
-A   = ones(1,PROBLEMDIMENSION);
-lb  = (1-AllowedReductionPercentage) * baseODMatrix(TopODIndices,3);
-ub  =baseODMatrix(TopODIndices,3);
-RHS = sum(ub)-NUM_VEHICLES_TO_REMOVE;
-
 % Adding non linear constraints
 % --------------------------------------------------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------------------------------------------------
 function [c,ceq] = nonlcon(x)
-    const1=x(1:PROBLEMDIMENSION)-lb;
-    ceq = sum(x(1:PROBLEMDIMENSION))-x(PROBLEMDIMENSION+1);   
+    
+    % Setting lower and upper bounds
+    lb  = (1-AllowedReductionPercentage) * baseODMatrix(TopODIndices,3);
+    Ineq1= x(1:DEMANDLENGTH)-lb;
+    ub  =baseODMatrix(TopODIndices,3);
+    Ineq2= -x(1:DEMANDLENGTH)+ub;
+    
+    %Getting the equality constraint     
+    Eq1 = sum(x(1:DEMANDLENGTH)) - (sum(ub)-NUM_VEHICLES_TO_REMOVE);
+    
+    %Adding the queuing model
+    Eq2 = sum(x(1:DEMANDLENGTH))-x(DEMANDLENGTH+1)^2;
+
+    c = [Ineq1;Ineq2];
+    ceq = [Eq1; Eq2];
 end
+
+% Getting an initial point
 % --------------------------------------------------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------------------------------------------------
+InitialPoint = [x_init sum(x_init)]';
+
+
 options=optimset('Diagnostics','off','Algorithm','interior-point','Display','off','MaxFunEvals',100000000,'MaxIter',100000000,...
     'TolFun',10e-7,'TolCon',10e-7);
-CurrTrialPoint = fmincon(@obj,[x_init sum(x_init)]' ,[],[],A,RHS,lb,ub,[],options);
-TrialPoint=CurrTrialPoint(1:PROBLEMDIMENSION)';
+CurrTrialPoint = fmincon(@obj,InitialPoint ,[],[],[],[],[],[],@nonlcon,options);
+TrialPoint=CurrTrialPoint(1:DEMANDLENGTH)';
 
 end
